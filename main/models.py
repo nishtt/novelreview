@@ -6,7 +6,8 @@ class Novel(models.Model):
     author = models.CharField(max_length=300)
     description = models.TextField(max_length=5000)
     release_date = models.DateField()
-    averageRating = models.FloatField()
+    averageRating = models.FloatField(default=0)
+    image = models.URLField(default=None, null=True, max_length=500)
 
     def __str__(self):
         return self.name

@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <br>
+  <div class="card">
+    <div class="card-body">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="{{ novel.image }}" alt="{{ novel.name }}" class="img-fluid">
+        </div>
+        <div class="col-md-8">
+          <h3 class="text-center">
+            {{novel.name}}
+          </h3>
+            <p> {{ novel.description }}</p>
+            <h5> Author: {{novel.author}}</h5>
+            <h5> Rating: {{novel.averageRating}}</h5>
+            <a href="{% url 'main:edit_novels' novel.id %}" class="btn btn-warning"> Edit </a>
+            <a href="{% url 'main:delete_novels' novel.id %}" class="btn btn-danger"> Delete </a>
+        </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
