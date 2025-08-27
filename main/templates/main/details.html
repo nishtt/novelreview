@@ -17,8 +17,12 @@
             <p> {{ novel.description }}</p>
             <h5> Author: {{novel.author}}</h5>
             <h5> Rating: {{novel.averageRating}}</h5>
-            <a href="{% url 'main:edit_novels' novel.id %}" class="btn btn-warning"> Edit </a>
-            <a href="{% url 'main:delete_novels' novel.id %}" class="btn btn-danger"> Delete </a>
+            {% if request.user.is_authenticated %}
+              {% if request.user.is_superuser %}
+                <a href="{% url 'main:edit_novels' novel.id %}" class="btn btn-warning"> Edit </a>
+                <a href="{% url 'main:delete_novels' novel.id %}" class="btn btn-danger"> Delete </a>
+              {% endif %}
+            {% endif %}
         </div>
     </div>
     </div>

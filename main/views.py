@@ -23,32 +23,48 @@ def detail(request, id):
 
 #add novel to db
 def add_novels(request):
-    if request.method == "POST":
-        form = NovelForm(request.POST or None)
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            if request.method == "POST":
+                form = NovelForm(request.POST or None)
 
-        if form.is_valid():
-            data = form.save(commit=False)
-            data.save()
+                if form.is_valid():
+                    data = form.save(commit=False)
+                    data.save()
+                    return redirect("main:home")
+            else:
+                form = NovelForm()
+            return render(request, 'main/addnovels.html', {"form": form, "controller": "Add novel"})
+        else:
             return redirect("main:home")
-    else:
-        form = NovelForm()
-    return render(request, 'main/addnovels.html', {"form": form, "controller": "Add novel"})
+    return redirect("accounts:login")
 
 def edit_novels(request, id):
-    novel = Novel.objects.get(id=id)
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            novel = Novel.objects.get(id=id)
 
-    if request.method == "POST":
-        form = NovelForm(request.POST or None, instance=novel)
+            if request.method == "POST":
+                form = NovelForm(request.POST or None, instance=novel)
 
-        if form.is_valid():
-            data = form.save(commit=False)
-            data.save()
-            return redirect("main:detail", id)
-    else:
-        form = NovelForm(instance=novel)
-    return render(request, 'main/addnovels.html', {"form": form, "controller": "Edit novel"})
+                if form.is_valid():
+                    data = form.save(commit=False)
+                    data.save()
+                    return redirect("main:detail", id)
+            else:
+                form = NovelForm(instance=novel)
+            return render(request, 'main/addnovels.html', {"form": form, "controller": "Edit novel"})
+        else:
+            return redirect("main:home")
+    return redirect("accounts:login")
 
 def delete_novels(request, id):
-    novel = Novel.objects.get(id=id)
-    novel.delete()
-    return redirect("main:home")
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            novel = Novel.objects.get(id=id)
+            novel.delete()
+            return redirect("main:home")
+        else:
+            return redirect("main:home")
+    return redirect("accounts:login")
+
