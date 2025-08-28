@@ -4,3 +4,29 @@ body {
 #backdrop {
     background-color: #fff9e4
 }
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse; /* This reverses the visual order */
+    justify-content: flex-end;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    font-size: 2rem;
+    color: #ddd;
+    transition: color 0.2s;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+
+/* Ensure the checked star stays highlighted */
+.star-rating input[type="radio"]:checked + label {
+    color: #ffc107;
+}
