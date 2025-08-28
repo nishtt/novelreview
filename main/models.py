@@ -18,11 +18,11 @@ class Novel(models.Model):
     
 
 class Review(models.Model):
-    novel = models.ForeignKey(Novel, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment = models.TextField(max_length=3000)
-    rating = models.FloatField(default=0)
-
+    novel = models.ForeignKey('Novel', on_delete=models.CASCADE)
+    comment = models.TextField() 
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 11)])  
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
-        return self.user.username
-
+        return f"Review by {self.user.username} for {self.novel.name}"

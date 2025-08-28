@@ -25,9 +25,11 @@
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'main:home'%}">Home <span class="sr-only">(current)</span></a>
       </li>
+      {% if user.is_superuser %}
       <li class="nav-item">
         <a class="nav-link" href="{% url 'main:add_novels' %}">Add Novel</a>
       </li>
+      {% endif %}
       {% if user.is_authenticated %}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
@@ -50,7 +52,7 @@
     </ul>
     <form class="form-inline my-2 my-lg-0" method="GET" action="{% url 'main:home' %}">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" style="background-color: #ffffff" name="title">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="background-color: #f16c75" >Search</button>
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="background-color: #f16c75; color:#ffffff; border-color: #f16c75;" >Search</button>
     </form>
   </div>
 </nav>

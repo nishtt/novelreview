@@ -28,54 +28,80 @@
     </div>
   </div>
   <br>
+  
+  {% if not existing_review %}
   <div class="card">
     <div class="card-body">
+      <h3 class="text-center">Add Your Review</h3>
+      
+      <!-- Error Message Display -->
+      {% if error_message %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ error_message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      {% endif %}
+      
       <form action="{% url 'main:add_review' novel.id %}" method="POST"> 
         {% csrf_token %}
-        <label for="comment">Review</label>
-        <textarea name="comment" id="comment" cols="30" rows="5" class="form-control"></textarea>
+        
+        <!-- Comment Field with Error Display -->
+        <div class="form-group">
+            <label for="comment">Review</label>
+            <textarea name="comment" id="comment" cols="30" rows="5" class="form-control">{% if request.POST.comment %}{{ request.POST.comment }}{% endif %}</textarea>
+        </div>
 
-<label for="rating">Rating</label>
-<div class="star-rating">
-    <input type="radio" id="star10" name="rating" value="10" {% if form.rating.value == "10" %}checked{% endif %}>
-    <label for="star10" class="rating__item" data-value="10">★</label>
-    
-    <input type="radio" id="star9" name="rating" value="9" {% if form.rating.value == "9" %}checked{% endif %}>
-    <label for="star9" class="rating__item" data-value="9">★</label>
-    
-    <input type="radio" id="star8" name="rating" value="8" {% if form.rating.value == "8" %}checked{% endif %}>
-    <label for="star8" class="rating__item" data-value="8">★</label>
-    
-    <input type="radio" id="star7" name="rating" value="7" {% if form.rating.value == "7" %}checked{% endif %}>
-    <label for="star7" class="rating__item" data-value="7">★</label>
-    
-    <input type="radio" id="star6" name="rating" value="6" {% if form.rating.value == "6" %}checked{% endif %}>
-    <label for="star6" class="rating__item" data-value="6">★</label>
-    
-    <input type="radio" id="star5" name="rating" value="5" {% if form.rating.value == "5" %}checked{% endif %}>
-    <label for="star5" class="rating__item" data-value="5">★</label>
-    
-    <input type="radio" id="star4" name="rating" value="4" {% if form.rating.value == "4" %}checked{% endif %}>
-    <label for="star4" class="rating__item" data-value="4">★</label>
-    
-    <input type="radio" id="star3" name="rating" value="3" {% if form.rating.value == "3" %}checked{% endif %}>
-    <label for="star3" class="rating__item" data-value="3">★</label>
-    
-    <input type="radio" id="star2" name="rating" value="2" {% if form.rating.value == "2" %}checked{% endif %}>
-    <label for="star2" class="rating__item" data-value="2">★</label>
-    
-    <input type="radio" id="star1" name="rating" value="1" {% if form.rating.value == "1" %}checked{% endif %}>
-    <label for="star1" class="rating__item" data-value="1">★</label>
-</div>
+        <label for="rating">Rating</label>
+        <div class="star-rating">
+            <input type="radio" id="star10" name="rating" value="10" {% if request.POST.rating == "10" %}checked{% endif %}>
+            <label for="star10" class="rating__item" data-value="10">★</label>
+            
+            <input type="radio" id="star9" name="rating" value="9" {% if request.POST.rating == "9" %}checked{% endif %}>
+            <label for="star9" class="rating__item" data-value="9">★</label>
+            
+            <input type="radio" id="star8" name="rating" value="8" {% if request.POST.rating == "8" %}checked{% endif %}>
+            <label for="star8" class="rating__item" data-value="8">★</label>
+            
+            <input type="radio" id="star7" name="rating" value="7" {% if request.POST.rating == "7" %}checked{% endif %}>
+            <label for="star7" class="rating__item" data-value="7">★</label>
+            
+            <input type="radio" id="star6" name="rating" value="6" {% if request.POST.rating == "6" %}checked{% endif %}>
+            <label for="star6" class="rating__item" data-value="6">★</label>
+            
+            <input type="radio" id="star5" name="rating" value="5" {% if request.POST.rating == "5" %}checked{% endif %}>
+            <label for="star5" class="rating__item" data-value="5">★</label>
+            
+            <input type="radio" id="star4" name="rating" value="4" {% if request.POST.rating == "4" %}checked{% endif %}>
+            <label for="star4" class="rating__item" data-value="4">★</label>
+            
+            <input type="radio" id="star3" name="rating" value="3" {% if request.POST.rating == "3" %}checked{% endif %}>
+            <label for="star3" class="rating__item" data-value="3">★</label>
+            
+            <input type="radio" id="star2" name="rating" value="2" {% if request.POST.rating == "2" %}checked{% endif %}>
+            <label for="star2" class="rating__item" data-value="2">★</label>
+            
+            <input type="radio" id="star1" name="rating" value="1" {% if request.POST.rating == "1" %}checked{% endif %}>
+            <label for="star1" class="rating__item" data-value="1">★</label>
+        </div>
 
         <br>
-
         <input type="submit" class="btn btn-danger" value="Add Review">
       </form>
     </div>
   </div>
+  {% else %}
+  <div class="card">
+    <div class="card-body text-center">
+      <h4>You've already reviewed this novel!</h4>
+      <p>You can <a href="{% url 'main:edit_review' novel.id existing_review.id %}">edit your existing review</a> instead.</p>
+    </div>
+  </div>
+{% endif %}
   <br>
 
+  <!-- Reviews List -->
   <div class="card">
     <div class="card-body">
       <ul>
@@ -87,7 +113,7 @@
           <div class="row" >
             <div class="col-md-3">
               <h5 class="text-left">{{ review.user.username }}</h5>
-              <h5> {{ review.rating }}</h5>
+              <h5> {{ review.rating }}/10</h5>
               {% if request.user == review.user %}
               <a href="{% url 'main:edit_review' novel.id review.id %}"> Edit </a>
               <a href="{% url 'main:delete_review' novel.id review.id %}" onclick="return confirm('Are you sure you want to delete your review?')"> Delete </a>
@@ -95,6 +121,7 @@
             </div>
             <div class="col-md-9">
               <p>{{review.comment}}</p>
+              <small class="text-muted">Posted on: {{ review.created_at|date:"M d, Y" }}</small>
             </div>
           </div>
         </div>
@@ -105,5 +132,4 @@
     </div>
   </div>
 </div>
-
 {% endblock %}

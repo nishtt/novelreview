@@ -30,3 +30,5 @@ body {
 .star-rating input[type="radio"]:checked + label {
     color: #ffc107;
 }
+
+

@@ -10,4 +10,16 @@ class NovelForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ('comment', 'rating')
+        fields = ['rating', 'comment']
+    
+    def clean_rating(self):
+        rating = self.cleaned_data.get('rating')
+        if not rating:
+            raise forms.ValidationError("Please select a rating.")
+        return rating
+    
+    def clean_comment(self):
+        comment = self.cleaned_data.get('comment', '').strip()
+        if not comment:
+            raise forms.ValidationError("Review comment cannot be empty.")
+        return comment

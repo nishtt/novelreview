@@ -80,24 +80,50 @@ def delete_novels(request, id):
             return redirect("main:home")
     return redirect("accounts:login")
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Avg
+from .models import Novel, Review
+from .forms import ReviewForm
+
 def add_review(request, id):
-    if request.user.is_authenticated:
-        novel = Novel.objects.get(id=id)
-        if request.method == "POST":
-            form = ReviewForm(request.POST or None)
-            if form.is_valid():
-                data = form.save(commit=False)
-                data.comment = request.POST.get("comment")
-                data.rating = request.POST.get("rating")
-                data.user = request.user
-                data.novel = novel
-                data.save()
-                return redirect("main:detail", id)
-            else:
-                form = ReviewForm()
-            return render(request, "main/details.html", {"form":form})
+    if not request.user.is_authenticated:
+        return redirect("accounts:login")
+    
+    novel = get_object_or_404(Novel, id=id)
+    error_message = None
+    
+    existing_review = Review.objects.filter(user=request.user, novel=novel).first()
+    
+    if request.method == "POST":
+        if existing_review:
+            error_message = "You have already reviewed this novel. You can edit your existing review."
         else:
-            return redirect("accounts:login")
+            rating = request.POST.get('rating')
+            comment = request.POST.get('comment', '').strip()
+            
+            if not rating or not comment:
+                error_message = "Please fill out both rating and review fields."
+            else:
+                review = Review.objects.create(
+                    user=request.user,
+                    novel=novel,
+                    comment=comment,
+                    rating=int(rating)
+                )
+                return redirect("main:detail", id)
+    
+    reviews = Review.objects.filter(novel=novel)
+    average = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+    
+    context = {
+        'novel': novel,
+        'reviews': reviews,
+        'average': average,
+        'error_message': error_message,
+        'existing_review': existing_review 
+    }
+    
+    return render(request, "main/details.html", context)
         
 
 #edit review
