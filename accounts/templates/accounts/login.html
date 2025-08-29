@@ -2,7 +2,7 @@
 
 
 {% block content %}
- <div class="container">
+ <div class="container" >
     <br>
     <div class="card">
         <div class="card-body">
@@ -15,7 +15,10 @@
                 <label for="password"> Password </label>
                 <input type="password" placeholder="Enter your password" class="form-control" name="password">
                 <br>
-
+                <div class="form-group form-check">
+                    <input type="checkbox" name="remember_me" class="form-check-input" id="remember_me">
+                    <label class="form-check-label" for="remember_me">Remember me</label>
+                </div>
                 {% if error %}
                     <i style="color:red">{{ error }}</i>
                 {% endif%}
@@ -24,6 +27,7 @@
             </form>
         </div>
     </div>
+    <br>
  </div>
 
 

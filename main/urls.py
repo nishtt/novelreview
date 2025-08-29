@@ -12,4 +12,7 @@ urlpatterns = [
     path('addreview/<int:id>/', views.add_review, name="add_review" ),
     path('editreview/<int:novel_id>/<int:review_id>/', views.edit_review,  name="edit_review"),
     path('deletereview/<int:novel_id>/<int:review_id>/', views.delete_review,  name="delete_review"),
+    path('profile/', views.profile, name='profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('user/<str:username>/', views.user_profile, name='user_profile'),
 ]

@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from .models import *
 from .forms import *
 from django.db.models import Avg
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 # Create your views here.
 def home(request):
@@ -164,3 +166,58 @@ def delete_review(request, novel_id, review_id):
         return redirect("main:detail", novel_id)
     else:
         return redirect("accounts:login")
+
+
+@login_required
+def profile(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    user = request.user
+    user_reviews = Review.objects.filter(user=user).select_related('novel')
+    
+    total_reviews = user_reviews.count()
+    average_rating = user_reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+    
+    context = {
+        'user': user,
+        'reviews': user_reviews,
+        'total_reviews': total_reviews,
+        'average_rating': round(average_rating, 1),
+    }
+    return render(request, 'main/profile.html', context)
+
+@login_required
+def edit_profile(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('main:profile')
+    else:
+        form = ProfileForm(instance=request.user.profile)
+    
+    return render(request, 'main/edit_profile.html', {'form': form})
+
+def user_profile(request, username):
+   
+    profile_user = get_object_or_404(User, username=username)
+    
+    user_reviews = Review.objects.filter(user=profile_user).select_related('novel')
+    
+    total_reviews = user_reviews.count()
+    average_rating = user_reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+    
+    recent_reviews = user_reviews.order_by('-created_at')[:5]
+    
+    context = {
+        'profile_user': profile_user,
+        'reviews': recent_reviews,
+        'total_reviews': total_reviews,
+        'average_rating': round(average_rating, 1),
+        'is_own_profile': request.user == profile_user,
+    }
+    
+    return render(request, 'main/user_profile.html', context)

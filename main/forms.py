@@ -23,3 +23,11 @@ class ReviewForm(forms.ModelForm):
         if not comment:
             raise forms.ValidationError("Review comment cannot be empty.")
         return comment
+    
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'profile_picture']
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Tell us about yourself...'}),
+        }

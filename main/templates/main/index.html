@@ -7,14 +7,14 @@
         <div class="card-body">
             <div class="row">
                 {% for novel in novels %}
-                <div class="col-md-4 mb-4">  <!-- Added mb-4 for bottom margin -->
-                    <div class="card h-100">  <!-- Added h-100 here -->
-                      <div class="card-body d-flex flex-column">  <!-- Added flex column -->
+                <div class="col-md-4 mb-4">  
+                    <div class="card h-100">  
+                      <div class="card-body d-flex flex-column">  
                         <img src="{{ novel.image }}" alt="{{ novel.name }}" class="img-fluid">
                         <h3 class="text-center">{{ novel.name }}</h3>
-                        <div class="text-center mt-auto">  <!-- Added mt-auto to push to bottom -->
+                        <div class="text-center mt-auto">  
                             <i>{{ novel.release_date }}</i><br>
-                            <a href="{% url 'main:detail' novel.id %}" class="btn btn-primary mt-2">Read more</a>
+                            <a href="{% url 'main:detail' novel.id %}" class="custom-pink-button mt-2">Read more</a>
                         </div>
                       </div>  
                     </div>
