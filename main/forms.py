@@ -5,7 +5,30 @@ from .models import *
 class NovelForm(forms.ModelForm):
     class Meta:
         model = Novel
-        fields = ('name', 'author', 'description', 'release_date', 'image')
+        fields = ('name', 'author', 'description', 'release_date', 'image', 'genres')
+        widgets = {
+            'genres': forms.CheckboxSelectMultiple(),
+        }
+
+class GenreForm(forms.ModelForm):
+    class Meta:
+        model = Genre
+        fields = ['name', 'description']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter genre name'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Genre description (optional)'
+            }),
+        }
+        labels = {
+            'name': 'Genre name',
+            'description': 'Description',
+        }
 
 class ReviewForm(forms.ModelForm):
     class Meta:

@@ -17,10 +17,20 @@
             <p> {{ novel.description }}</p>
             <h5> Author: {{novel.author}}</h5>
             <h5> Rating: {{average}}/10</h5>
+            {% if novel.genres.all %}
+            <div class="genres-srction mb-3">
+              <h5>Genres:</h5>
+              <div class="genre-badges">
+                {% for genre in novel.genres.all %}
+                <span class="badge bg-secondary me-1"> {{ genre.name }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
             {% if request.user.is_authenticated %}
               {% if request.user.is_superuser %}
-                <a href="{% url 'main:edit_novels' novel.id %}" class="btn btn-warning"> Edit </a>
-                <a href="{% url 'main:delete_novels' novel.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete the novel?')"> Delete </a>
+                <a href="{% url 'main:edit_novels' novel.id %}" class="btn btn-secondary"> Edit </a>
+                <a href="{% url 'main:delete_novels' novel.id %}" class="btn btn-outline-pink" onclick="return confirm('Are you sure you want to delete the novel?')"> Delete </a>
               {% endif %}
             {% endif %}
         </div>
@@ -140,7 +150,7 @@
                     <a href="{% url 'main:edit_review' novel.id review.id %}" 
                        class="btn btn-sm btn-outline-secondary">Edit</a>
                     <a href="{% url 'main:delete_review' novel.id review.id %}" 
-                       class="btn btn-sm btn-outline-danger" 
+                       class="btn btn-sm btn-outline-pink" 
                        onclick="return confirm('Delete your review?')">Delete</a>
                 </div>
                 {% endif %}

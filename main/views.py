@@ -22,7 +22,7 @@ def home(request):
 
 #detail page
 def detail(request, id):
-    novel = Novel.objects.get(id=id)
+    novel = Novel.objects.prefetch_related('genres').get(id=id)
     reviews = Review.objects.filter(novel=id)
     average = reviews.aggregate(Avg("rating"))["rating__avg"]
     if average == None:
@@ -43,7 +43,7 @@ def add_novels(request):
                 form = NovelForm(request.POST or None)
 
                 if form.is_valid():
-                    data = form.save(commit=False)
+                    data = form.save()
                     data.save()
                     return redirect("main:home")
             else:
@@ -62,7 +62,7 @@ def edit_novels(request, id):
                 form = NovelForm(request.POST or None, instance=novel)
 
                 if form.is_valid():
-                    data = form.save(commit=False)
+                    data = form.save()
                     data.save()
                     return redirect("main:detail", id)
             else:
@@ -86,6 +86,51 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Avg
 from .models import Novel, Review
 from .forms import ReviewForm
+
+@login_required
+def genre_list(request):
+    genres = Genre.objects.all().order_by('name')
+    return render(request, 'main/genre_list.html', {'genres': genres})
+
+@login_required
+def add_genre(request):
+    if request.method == 'POST':
+        form = GenreForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Genre added successfully!')
+            return redirect('main:genre_list')
+    else:
+        form = GenreForm()
+    
+    return render(request, 'main/add_genre.html', {'form': form})
+
+@login_required
+def edit_genre(request, id):
+    genre = get_object_or_404(Genre, id=id)
+    
+    if request.method == 'POST':
+        form = GenreForm(request.POST, instance=genre)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Genre updated successfully!')
+            return redirect('main:genre_list')
+    else:
+        form = GenreForm(instance=genre)
+    
+    return render(request, 'main/edit_genre.html', {'form': form, 'genre': genre})
+
+@login_required
+def delete_genre(request, id):
+    genre = get_object_or_404(Genre, id=id)
+    
+    if request.method == 'POST':
+        genre.delete()
+        messages.success(request, 'Genre deleted successfullly!')
+        return redirect('main:genre_list')
+    
+    return render(request, 'main/delete_genre.html', {'genre': genre})
+
 
 def add_review(request, id):
     if not request.user.is_authenticated:

@@ -15,4 +15,8 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('user/<str:username>/', views.user_profile, name='user_profile'),
+    path('genres/', views.genre_list, name='genre_list'),
+    path('genres/add/', views.add_genre, name='add_genre'),
+    path('genres/edit/<int:id>/', views.edit_genre, name='edit_genre'),
+    path('genres/delete/<int:id>/', views.delete_genre, name='delete_genre'),
 ]

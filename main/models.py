@@ -12,6 +12,8 @@ class Novel(models.Model):
     release_date = models.DateField()
     averageRating = models.FloatField(default=0)
     image = models.URLField(default=None, null=True, max_length=500)
+    genres = models.ManyToManyField('Genre', blank=True)
+    
 
     def __str__(self):
         return self.name
@@ -19,7 +21,20 @@ class Novel(models.Model):
     def __unicode__(self):
         return self.name
     
-
+    
+    
+class Genre(models.Model):
+    name = models.CharField(max_length=100, unique=True, verbose_name="Genre name")
+    description = models.TextField(blank=True, null=True, verbose_name="Description")
+    
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Genre'
+        verbose_name_plural = 'Genres'
+    
+    def __str__(self):
+        return self.name
+    
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     novel = models.ForeignKey('Novel', on_delete=models.CASCADE)
