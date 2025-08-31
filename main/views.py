@@ -9,14 +9,23 @@ from django.contrib import messages
 # Create your views here.
 def home(request):
     query = request.GET.get("title")
-    allNovels = None
+    genre_filter = request.GET.get("genre")
+    
+    novels = Novel.objects.all()
+    
+    if genre_filter:
+        novels = novels.filter(genres__id=genre_filter)
+    
     if query:
-        allNovels = Novel.objects.filter(name__icontains=query)
-    else:
-        allNovels = Novel.objects.all()
+        novels = novels.filter(name__icontains=query)
+    
+    genres = Genre.objects.all().order_by('name')
     
     context = {
-        "novels": allNovels,
+        "novels": novels,
+        "genres": genres,
+        "search_query": query,
+        "selected_genre": genre_filter,
     }
     return render(request, 'main/index.html', context)
 

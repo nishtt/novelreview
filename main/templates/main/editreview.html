@@ -9,7 +9,8 @@
             <form action="" method="POST"> 
                 {% csrf_token %}
                 {{ form | crispy }}
-                <input type="submit" value="Save changes" class="btn btn-danger">
+                <input type="submit" value="Save changes" class="btn btn-outline-pink">
+                <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary">Cancel</a>
                 {% if error %}
                     <strong style="color:red"> {{ error }} </strong>
                 {% endif %}

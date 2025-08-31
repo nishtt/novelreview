@@ -3,6 +3,21 @@
 
 <div class="container"> 
     <br>
+<div class="mb-4">
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'main:home' %}{% if search_query %}?title={{ search_query }}{% endif %}" 
+           class="badge {% if not selected_genre %}bg-primary{% else %}bg-light text-dark{% endif %} p-2 text-decoration-none">
+           All
+        </a>
+        {% for genre in genres %}
+        <a href="{% url 'main:home' %}?genre={{ genre.id }}{% if search_query %}&title={{ search_query }}{% endif %}" 
+           class="badge {% if selected_genre == genre.id|stringformat:'s' %}bg-primary{% else %}bg-light text-dark{% endif %} p-2 text-decoration-none">
+           {{ genre.name }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+    <br>
     <div class="card" id="backdrop">
         <div class="card-body">
             <div class="row">
