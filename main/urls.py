@@ -20,5 +20,6 @@ urlpatterns = [
     path('genres/edit/<int:id>/', views.edit_genre, name='edit_genre'),
     path('genres/delete/<int:id>/', views.delete_genre, name='delete_genre'),
     path('favorite/<int:novel_id>/', views.toggle_favorite, name='toggle_favorite'),
+    path('favorite/remove/<int:novel_id>/', views.remove_favorite, name='remove_favorite'),
     path('favorites/', views.favorite_list, name='favorite_list'),
 ]

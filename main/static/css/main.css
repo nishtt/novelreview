@@ -241,3 +241,14 @@ body {
     height: 100%;
     object-fit: cover;
 }
+
+.book-cover {
+  height: 450px;        
+  object-fit: cover;    
+}
+
+.description {
+  min-height: 100px;     
+  max-height: 100px;
+  overflow: hidden;
+}

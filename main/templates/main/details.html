@@ -127,6 +127,7 @@
   <!-- Reviews List -->
   <div class="card">
     <div class="card-body">
+      {% if reviews %}
       <ul>
          <h3 class="text-center">Reviews</h3>
          <br>
@@ -185,6 +186,11 @@
 <br>
 {% endfor %}
       </ul>
+{% else %}
+<div class="alert alert-info">
+       No reviews yet.
+    </div>
+ {% endif %}
     </div>
   </div>
 </div>

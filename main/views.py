@@ -309,3 +309,9 @@ def toggle_favorite(request, novel_id):
 def favorite_list(request):
     favorites = Favorite.objects.filter(user=request.user).select_related('novel')
     return render(request, 'main/favorites.html', {'favorites': favorites})
+
+@login_required
+def remove_favorite(request, novel_id):
+    novel = get_object_or_404(Novel, id=novel_id)
+    Favorite.objects.filter(user=request.user, novel=novel).delete()
+    return redirect('main:favorite_list')
