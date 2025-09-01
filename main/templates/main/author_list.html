@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Authors</h2>
+        {% if user.is_superuser %}
+        <a href="{% url 'main:add_author' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Author
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="row">
+        {% for author in authors %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'main:author_detail' author.id %}">{{ author.name }}</a>
+                    </h5>
+                    {% if author.country %}
+                    <p class="text-muted">{{ author.country }}</p>
+                    {% endif %}
+                    <p class="card-text">
+                        <small class="text-muted">{{ author.novel_count }} novels</small>
+                    </p>
+                </div>
+                {% if user.is_superuser %}
+                <div class="card-footer bg-transparent">
+                    <a href="{% url 'main:edit_author' author.id %}" class="btn btn-sm btn-outline-secondary">
+                        Edit
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-user-edit fa-3x text-muted mb-3"></i>
+            <h4>No authors yet</h4>
+            <p class="text-muted">Authors will appear here once added</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
