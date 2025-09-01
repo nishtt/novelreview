@@ -65,3 +65,12 @@ def save_user_profile(sender, instance, **kwargs):
     else:
         
         Profile.objects.create(user=instance)
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    novel = models.ForeignKey('Novel', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'novel') 
+        ordering = ['-created_at']

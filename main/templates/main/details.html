@@ -28,11 +28,25 @@
               </div>
             </div>
             {% endif %}
+
+            
             {% if request.user.is_authenticated %}
               {% if request.user.is_superuser %}
                 <a href="{% url 'main:edit_novels' novel.id %}" class="btn btn-secondary"> Edit </a>
                 <a href="{% url 'main:delete_novels' novel.id %}" class="btn btn-outline-pink" onclick="return confirm('Are you sure you want to delete the novel?')"> Delete </a>
               {% endif %}
+            {% endif %}
+            
+            {% if user.is_authenticated %}
+                {% if is_favorite %}
+                    <a href="{% url 'main:toggle_favorite' novel.id %}" class="btn btn-outline-pink btn-sm">
+                        ★ Remove from Favorites
+                    </a>
+                {% else %}
+                    <a href="{% url 'main:toggle_favorite' novel.id %}" class="btn btn-outline-secondary btn-sm">
+                        ☆ Add to Favorites
+                    </a>
+                {% endif %}
             {% endif %}
         </div>
     </div>

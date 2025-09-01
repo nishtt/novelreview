@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import *
 from .forms import *
 from django.db.models import Avg, Count
@@ -40,11 +40,16 @@ def detail(request, id):
         average=0
     average = round(average, 2)
     review_count=reviews.count()
+
+    is_favorite = False
+    if request.user.is_authenticated:
+        is_favorite = Favorite.objects.filter(user=request.user, novel=novel).exists()
     context = {
         "novel": novel,
         "reviews": reviews,
         "average": average,
-        "review_count": review_count
+        "review_count": review_count,
+        "is_favorite": is_favorite
     }
     return render (request, 'main/details.html', context)
 
@@ -279,3 +284,28 @@ def user_profile(request, username):
     }
     
     return render(request, 'main/user_profile.html', context)
+
+
+@login_required
+def toggle_favorite(request, novel_id):
+    novel = get_object_or_404(Novel, id=novel_id)
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user,
+        novel=novel
+    )
+    
+    if not created:
+        favorite.delete()
+        message = "Removed from favorites"
+    else:
+        message = "Added to favorites"
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success', 'message': message, 'is_favorite': created})
+    
+    return redirect('main:detail', id=novel_id)
+
+@login_required
+def favorite_list(request):
+    favorites = Favorite.objects.filter(user=request.user).select_related('novel')
+    return render(request, 'main/favorites.html', {'favorites': favorites})
