@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from .models import *
 from .forms import *
@@ -31,7 +31,7 @@ def home(request):
     }
     return render(request, 'main/index.html', context)
 
-#detail page
+
 def detail(request, id):
     novel = Novel.objects.prefetch_related('genres').get(id=id)
     reviews = Review.objects.filter(novel=id)
@@ -53,57 +53,50 @@ def detail(request, id):
     }
     return render (request, 'main/details.html', context)
 
-#add novel to db
+@login_required
 def add_novels(request):
-    if request.user.is_authenticated:
-        if request.user.is_superuser:
-            if request.method == "POST":
-                form = NovelForm(request.POST or None)
+    if request.user.is_superuser:
+        if request.method == "POST":
+            form = NovelForm(request.POST or None)
 
-                if form.is_valid():
-                    data = form.save()
-                    data.save()
-                    return redirect("main:home")
-            else:
-                form = NovelForm()
-            return render(request, 'main/addnovels.html', {"form": form, "controller": "Add novel"})
+            if form.is_valid():
+                data = form.save()
+                data.save()
+                return redirect("main:home")
         else:
-            return redirect("main:home")
-    return redirect("accounts:login")
+            form = NovelForm()
+        return render(request, 'main/addnovels.html', {"form": form, "controller": "Add novel"})
+    else:
+        return redirect("main:home")
 
+@login_required
 def edit_novels(request, id):
-    if request.user.is_authenticated:
-        if request.user.is_superuser:
-            novel = Novel.objects.get(id=id)
+    if request.user.is_superuser:
+        novel = Novel.objects.get(id=id)
 
-            if request.method == "POST":
-                form = NovelForm(request.POST or None, instance=novel)
+        if request.method == "POST":
+            form = NovelForm(request.POST or None, instance=novel)
 
-                if form.is_valid():
-                    data = form.save()
-                    data.save()
-                    return redirect("main:detail", id)
-            else:
-                form = NovelForm(instance=novel)
-            return render(request, 'main/addnovels.html', {"form": form, "controller": "Edit novel"})
+            if form.is_valid():
+                data = form.save()
+                data.save()
+                return redirect("main:detail", id)
         else:
-            return redirect("main:home")
-    return redirect("accounts:login")
+            form = NovelForm(instance=novel)
+        return render(request, 'main/addnovels.html', {"form": form, "controller": "Edit novel"})
+    else:
+        return redirect("main:home")
 
+@login_required
 def delete_novels(request, id):
-    if request.user.is_authenticated:
-        if request.user.is_superuser:
-            novel = Novel.objects.get(id=id)
-            novel.delete()
-            return redirect("main:home")
-        else:
-            return redirect("main:home")
-    return redirect("accounts:login")
+    if request.user.is_superuser:
+        novel = Novel.objects.get(id=id)
+        novel.delete()
+        return redirect("main:home")
+    else:
+        return redirect("main:home")
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Avg
-from .models import Novel, Review
-from .forms import ReviewForm
+
 
 @login_required
 def genre_list(request):
@@ -149,10 +142,8 @@ def delete_genre(request, id):
     
     return render(request, 'main/delete_genre.html', {'genre': genre})
 
-
+@login_required
 def add_review(request, id):
-    if not request.user.is_authenticated:
-        return redirect("accounts:login")
     
     novel = get_object_or_404(Novel, id=id)
     error_message = None
@@ -191,44 +182,41 @@ def add_review(request, id):
     return render(request, "main/details.html", context)
         
 
-#edit review
+@login_required
 def edit_review(request, novel_id, review_id):
-    if request.user.is_authenticated:
-        novel = Novel.objects.get(id=novel_id)
-        review = Review.objects.get(novel=novel, id=review_id)
+   
+    novel = Novel.objects.get(id=novel_id)
+    review = Review.objects.get(novel=novel, id=review_id)
 
-        if request.user == review.user:
-            if request.method == "POST":
-                form = ReviewForm(request.POST, instance=review)
-                if form.is_valid():
-                    data = form.save(commit=False)
-                    if (data.rating > 10) or (data.rating < 0):
-                        error = "Out of range. Select rating from 0 to 10"
-                        return render(request, "main/editreview.html", {"error":error, "form":form})
-                    else:
-                        data.save()
-                        return redirect("main:detail", novel_id)
+    if request.user == review.user:
+        if request.method == "POST":
+            form = ReviewForm(request.POST, instance=review)
+            if form.is_valid():
+                data = form.save(commit=False)
+                if (data.rating > 10) or (data.rating < 0):
+                    error = "Out of range. Select rating from 0 to 10"
+                    return render(request, "main/editreview.html", {"error":error, "form":form})
+                else:
+                    data.save()
+                    return redirect("main:detail", novel_id)
                 
-            else:
-                form = ReviewForm(instance=review)
-            return render(request, 'main/editreview.html', {"form":form})
         else:
-            return redirect("main:detail", novel_id)
+            form = ReviewForm(instance=review)
+        return render(request, 'main/editreview.html', {"form":form})
     else:
-        return redirect("accounts:login")
-
-
-def delete_review(request, novel_id, review_id):
-    if request.user.is_authenticated:
-        novel = Novel.objects.get(id=novel_id)
-        review = Review.objects.get(novel=novel, id=review_id)
-
-        if request.user == review.user:
-          review.delete()
-        
         return redirect("main:detail", novel_id)
-    else:
-        return redirect("accounts:login")
+    
+
+@login_required
+def delete_review(request, novel_id, review_id):
+    novel = Novel.objects.get(id=novel_id)
+    review = Review.objects.get(novel=novel, id=review_id)
+
+    if request.user == review.user:
+        review.delete()
+        
+    return redirect("main:detail", novel_id)
+    
 
 
 @login_required
